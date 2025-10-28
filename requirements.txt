@@ -1,0 +1,37 @@
+# ========================================
+# EEG Monitoring System - Requirements
+# For Render / Clever Cloud Deployment
+# Python 3.12+
+# ========================================
+
+# Web Framework
+Flask==3.0.3
+Werkzeug==3.0.3
+
+# Scientific Computing & Signal Processing
+numpy==1.26.4
+scipy==1.11.4
+
+# Database Connector
+mysql-connector-python==8.3.0
+
+# Environment Variables Management
+python-dotenv==1.0.1
+
+# Machine Learning
+joblib==1.4.0
+scikit-learn==1.4.2
+xgboost==2.0.3
+lightgbm==4.3.0
+catboost==1.2.3
+
+# Data Visualization (for ML model)
+matplotlib==3.8.3
+graphviz==0.20.3
+
+# Production Server (for Render deployment)
+gunicorn==21.2.0
+
+# Additional Dependencies
+python-dateutil==2.9.0
+pytz==2024.1

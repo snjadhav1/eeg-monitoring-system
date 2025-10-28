@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BraCon - EEG Attention Monitoring System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="background-wrapper">
+        <div class="neural-network"></div>
+        <div class="particles"></div>
+        <div class="gradient-orbs"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-pulse"></div>
+                <span class="logo-text">BRACON</span>
+                <span class="logo-subtitle">EEG Monitoring</span>
+            </div>
+            <div class="nav-links">
+                <a href="/dashboard" class="nav-link active">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </a>
+                <a href="/students-page" class="nav-link">
+                    <span class="nav-icon">👥</span>
+                    Students
+                </a>
+                <a href="/session-history" class="nav-link">
+                    <span class="nav-icon">📜</span>
+                    History
+                </a>
+                <a href="#" class="nav-link">
+                    <span class="nav-icon">⚙️</span>
+                    Settings
+                </a>
+            </div>
+            <div class="nav-actions">
+                <button class="notification-btn">
+                    <span class="notification-badge">3</span>
+                    🔔
+                </button>
+                <div class="user-avatar">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%23667eea'/%3E%3Ctext x='20' y='26' font-size='16' fill='white' text-anchor='middle' font-family='Arial'%3ET%3C/text%3E%3C/svg%3E" alt="User">
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header Section -->
+        <section class="header-section">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1 class="page-title">
+                        <span class="title-gradient">Attention</span> Monitoring Dashboard
+                    </h1>
+                    <p class="page-subtitle">Real-time EEG brain activity analysis for classroom engagement</p>
+                </div>
+                <div class="header-right">
+                    <div class="date-time">
+                        <div class="current-date"></div>
+                        <div class="current-time"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Student Status Card -->
+        <section class="student-status-section">
+            <div class="glass-card teacher-dashboard-card">
+                <div class="card-title">
+                    <div>
+                        <h3>👨‍🏫 Teacher Dashboard</h3>
+                        <p class="teacher-info">
+                            <span id="teacherName">Loading...</span> | 
+                            <span id="subjectName">Loading...</span>
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="end-session-btn" onclick="endSession()">
+                            <span class="end-icon">🛑</span>
+                            <span>End Session</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Student Columns Grid -->
+                <div class="students-grid-container">
+                    <!-- Left Column -->
+                    <div class="student-column">
+                        <h4 class="column-header">Students Group A</h4>
+                        <div id="leftStudentList" class="student-list">
+                            <!-- Students will be dynamically inserted here -->
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="student-column">
+                        <h4 class="column-header">Students Group B</h4>
+                        <div id="rightStudentList" class="student-list">
+                            <!-- Students will be dynamically inserted here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Individual Student Dashboard (Hidden by Default) -->
+            <div id="individualDashboard" class="glass-card individual-dashboard" style="display: none;">
+                <div class="card-header">
+                    <h3 id="selectedStudentName">Student Dashboard</h3>
+                    <button class="back-btn" onclick="closeIndividualDashboard()">← Back to List</button>
+                </div>
+
+                <!-- Brain Wave Circle -->
+                <div class="brain-wave-circle-container">
+                    <div class="brain-wave-circle">
+                        <canvas id="brainCircleCanvas"></canvas>
+                        <div class="circle-center-content">
+                            <div class="student-state-icon" id="stateIcon">🧠</div>
+                            <div class="student-state-text" id="stateText">Analyzing...</div>
+                        </div>
+                    </div>
+
+                    <!-- Wave Percentages -->
+                    <div class="wave-percentages">
+                        <div class="wave-percent-item alpha-wave">
+                            <div class="wave-name">Alpha</div>
+                            <div class="wave-value" id="alphaValue">0%</div>
+                            <div class="wave-bar">
+                                <div class="wave-bar-fill" id="alphaBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="wave-percent-item beta-wave">
+                            <div class="wave-name">Beta</div>
+                            <div class="wave-value" id="betaValue">0%</div>
+                            <div class="wave-bar">
+                                <div class="wave-bar-fill" id="betaBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="wave-percent-item gamma-wave">
+                            <div class="wave-name">Gamma</div>
+                            <div class="wave-value" id="gammaValue">0%</div>
+                            <div class="wave-bar">
+                                <div class="wave-bar-fill" id="gammaBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="wave-percent-item theta-wave">
+                            <div class="wave-name">Theta</div>
+                            <div class="wave-value" id="thetaValue">0%</div>
+                            <div class="wave-bar">
+                                <div class="wave-bar-fill" id="thetaBar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Student Behavior Description -->
+            
+
+                <!-- Student-Specific Detailed Sections Grid -->
+                <div class="student-details-grid">
+                    <!-- Attention Span Tracking -->
+                    <div class="attention-card detail-section-card">
+                        <div class="card-title">
+                            <h3>🎯 Attention Span Tracking</h3>
+                        </div>
+
+                        <div class="focus-periods">
+                            <h4 class="section-subtitle">Continuous Focus Periods:</h4>
+                            <div class="periods-list" id="studentFocusPeriods">
+                                <div style="text-align: center; padding: 1.5rem; color: var(--text-muted);">
+                                    📊 Loading attention periods...
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Today's Stats -->
+                        <div class="today-stats">
+                            <h4 class="section-subtitle">📊 Today's Stats:</h4>
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="stat-icon">⏱️</div>
+                                    <div class="stat-content">
+                                        <span class="stat-label">Average Attention Span</span>
+                                        <span class="stat-value" id="avgAttentionSpan">Loading...</span>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon">🏆</div>
+                                    <div class="stat-content">
+                                        <span class="stat-label">Longest Span</span>
+                                        <span class="stat-value" id="longestSpan">Loading...</span>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon">🕐</div>
+                                    <div class="stat-content">
+                                        <span class="stat-label">Total Focus Time</span>
+                                        <span class="stat-value" id="totalFocusTime">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recommendation -->
+                        <div class="recommendation-box">
+                            <div class="recommendation-icon">💡</div>
+                            <div class="recommendation-content">
+                                <h5>Recommendation:</h5>
+                                <p id="attentionRecommendation">Analyzing your performance...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Brain Activity Visualization -->
+                    <div class="brain-activity-card detail-section-card">
+                        <div class="card-title">
+                            <h3>🧠 Real-time Brain Activity</h3>
+                        </div>
+                        <div class="brain-wave-container">
+                            <canvas id="brainWaveChart"></canvas>
+                        </div>
+                        <div class="wave-legend">
+                            <div class="legend-item">
+                                <span class="legend-color alpha"></span>
+                                <span>Alpha (8-13 Hz)</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color beta"></span>
+                                <span>Beta (13-30 Hz)</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color theta"></span>
+                                <span>Theta (4-8 Hz)</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-color delta"></span>
+                                <span>Delta (0.5-4 Hz)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Performance Metrics -->
+                    <div class="metrics-card detail-section-card">
+                        <div class="card-title">
+                            <h3>📈 Performance Metrics</h3>
+                        </div>
+                        <div class="metrics-grid">
+                            <div class="metric-item">
+                                <div class="metric-circle" data-percent="87">
+                                    <svg class="metric-svg">
+                                        <circle class="metric-bg" cx="60" cy="60" r="50"></circle>
+                                        <circle class="metric-progress" cx="60" cy="60" r="50"></circle>
+                                    </svg>
+                                    <div class="metric-text" id="studentFocusLevel">87%</div>
+                                </div>
+                                <span class="metric-label">Focus Level</span>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-circle" data-percent="73">
+                                    <svg class="metric-svg">
+                                        <circle class="metric-bg" cx="60" cy="60" r="50"></circle>
+                                        <circle class="metric-progress" cx="60" cy="60" r="50"></circle>
+                                    </svg>
+                                    <div class="metric-text" id="studentEngagement">73%</div>
+                                </div>
+                                <span class="metric-label">Engagement</span>
+                            </div>
+                            <!-- Removed Quality Score metric -->
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions-card detail-section-card">
+                        <div class="card-title">
+                            <h3>⚡ Quick Actions</h3>
+                        </div>
+                        <div class="action-buttons-grid">
+                            <button class="action-btn" onclick="braconApp.viewStudentHistory()">
+                                <div class="action-icon">📜</div>
+                                <div class="action-text">
+                                    <div class="action-label">Student History</div>
+                                    <div class="action-desc">View all sessions</div>
+                                </div>
+                            </button>
+                            <button class="action-btn" onclick="braconApp.exportStudentData()">
+                                <div class="action-icon">📥</div>
+                                <div class="action-text">
+                                    <div class="action-label">Export Data</div>
+                                    <div class="action-desc">Download reports</div>
+                                </div>
+                            </button>
+                            <button class="action-btn" onclick="braconApp.startStudentSession()">
+                                <div class="action-icon">🎯</div>
+                                <div class="action-text">
+                                    <div class="action-label">New Session</div>
+                                    <div class="action-desc">Start monitoring</div>
+                                </div>
+                            </button>
+                            <button class="action-btn" onclick="braconApp.sendStudentReport()">
+                                <div class="action-icon">📧</div>
+                                <div class="action-text">
+                                    <div class="action-label">Send Report</div>
+                                    <div class="action-desc">Email summary</div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Add Student Modal -->
+        <div id="addStudentModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>➕ Add New Student</h3>
+                    <button class="modal-close" onclick="closeAddStudentModal()">×</button>
+                </div>
+                <form id="addStudentForm" onsubmit="addNewStudent(event)">
+                    <div class="form-group">
+                        <label for="studentFirstName">First Name</label>
+                        <input type="text" id="studentFirstName" required placeholder="Enter first name">
+                    </div>
+                    <div class="form-group">
+                        <label for="studentLastName">Last Name</label>
+                        <input type="text" id="studentLastName" required placeholder="Enter last name">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="closeAddStudentModal()">Cancel</button>
+                        <button type="submit" class="btn-primary">Add Student</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <!-- <script src="{{ url_for('static', filename='js/script.js') }}"></script> -->
+    <script>
+        // Real-time data fetching and updating
+        let updateInterval;
+        let connectedStudents = new Map(); // Store student data by MAC address
+        let lastStudentsList = []; // Track previous student list to prevent unnecessary re-renders
+        
+        // Fetch teacher info from localStorage
+        function loadTeacherInfo() {
+            const teacherName = localStorage.getItem('teacherName') || 'Not Set';
+            const subjectName = localStorage.getItem('subjectName') || 'Not Set';
+            document.getElementById('teacherName').textContent = teacherName;
+            document.getElementById('subjectName').textContent = subjectName;
+        }
+        
+        // Update date and time
+        function updateDateTime() {
+            const now = new Date();
+            const dateEl = document.querySelector('.current-date');
+            const timeEl = document.querySelector('.current-time');
+            if (dateEl) dateEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            if (timeEl) timeEl.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        }
+        
+        // Get mental state styling
+        function getMentalStateStyle(state) {
+            const styles = {
+                'focused': { color: '#10b981', icon: '🎯', label: 'Focused' },
+                'relaxed': { color: '#8b5cf6', icon: '😌', label: 'Relaxed' },
+                'drowsy': { color: '#6366f1', icon: '😴', label: 'Drowsy' },
+                'distracted': { color: '#f59e0b', icon: '😵', label: 'Distracted' },
+                'monitoring': { color: '#6b7280', icon: '🧠', label: 'Monitoring' }
+            };
+            return styles[state] || styles['monitoring'];
+        }
+        
+        // Fetch connected devices/students
+        async function fetchConnectedStudents() {
+            try {
+                const response = await fetch('/devices');
+                const result = await response.json();
+                
+                console.log('📡 Devices Response:', result); // DEBUG
+                
+                if (result.status === 'ok') {
+                    console.log('✅ Connected Students:', result.devices.length); // DEBUG
+                    updateStudentsList(result.devices);
+                }
+            } catch (error) {
+                console.error('Error fetching students:', error);
+            }
+        }
+        
+        // Update students list in the UI (SMOOTH - no blinking)
+        function updateStudentsList(students) {
+            const leftList = document.getElementById('leftStudentList');
+            const rightList = document.getElementById('rightStudentList');
+            
+            if (!leftList || !rightList) return;
+            
+            // Backend already filters only connected students, so use them directly
+            const connectedStudents = students;
+            
+            // Check if student list has changed
+            const currentMacs = connectedStudents.map(s => s.device_mac).sort().join(',');
+            const previousMacs = lastStudentsList.map(s => s.device_mac).sort().join(',');
+            
+            // Only rebuild list if students changed
+            if (currentMacs !== previousMacs) {
+                lastStudentsList = connectedStudents;
+                
+                // Clear existing lists
+                leftList.innerHTML = '';
+                rightList.innerHTML = '';
+                
+                if (connectedStudents.length === 0) {
+                    leftList.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--text-muted); font-size: 1rem;">🎯 Waiting for students to connect...</div>';
+                    return;
+                }
+                
+                // Split students into two columns
+                connectedStudents.forEach((student, index) => {
+                    const targetList = index % 2 === 0 ? leftList : rightList;
+                    const studentCard = createStudentCard(student);
+                    targetList.appendChild(studentCard);
+                });
+            }
+            
+            // Fetch latest data for each connected student (updates cards smoothly)
+            connectedStudents.forEach(student => {
+                if (student.device_mac) {
+                    fetchStudentLatestData(student.device_mac);
+                }
+            });
+        }
+        
+        // Create student card element
+        function createStudentCard(student) {
+            const div = document.createElement('div');
+            div.className = 'student-card';
+            div.dataset.mac = student.device_mac;
+            div.onclick = () => openStudentDashboard(student.device_mac);
+            
+            const style = getMentalStateStyle('monitoring');
+            const shortMac = student.device_mac.split(':').slice(-3).join(':'); // Last 3 bytes
+            
+            div.innerHTML = `
+                <div class="student-card-header">
+                    <div class="student-avatar" style="background: linear-gradient(135deg, ${style.color}, ${style.color}88);">
+                        ${style.icon}
+                    </div>
+                    <div class="student-info">
+                        <h4 class="student-name">${student.name}</h4>
+                        <span class="student-status">MAC: ${shortMac}</span>
+                    </div>
+                </div>
+                <div class="student-card-body">
+                    <div class="state-badge" style="background: ${style.color}22; color: ${style.color};">
+                        ${style.icon} <span class="state-text">${style.label}</span>
+                    </div>
+                    <div class="focus-meter">
+                        <div class="focus-label">Focus Level</div>
+                        <div class="focus-bar">
+                            <div class="focus-fill" style="width: 0%; background: ${style.color}; transition: all 0.5s ease;"></div>
+                        </div>
+                        <div class="focus-value">0%</div>
+                    </div>
+                    <div class="brain-waves-mini">
+                        <div class="wave-mini">
+                            <span class="wave-label">α</span>
+                            <span class="wave-val alpha-val">0%</span>
+                        </div>
+                        <div class="wave-mini">
+                            <span class="wave-label">β</span>
+                            <span class="wave-val beta-val">0%</span>
+                        </div>
+                        <div class="wave-mini">
+                            <span class="wave-label">θ</span>
+                            <span class="wave-val theta-val">0%</span>
+                        </div>
+                        <div class="wave-mini">
+                            <span class="wave-label">δ</span>
+                            <span class="wave-val delta-val">0%</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            return div;
+        }
+        
+        // Fetch latest data for a specific student
+        async function fetchStudentLatestData(macAddress) {
+            try {
+                const response = await fetch(`/latest?mac_address=${macAddress}`);
+                const result = await response.json();
+                
+                if (result.status === 'ok' && result.bands) {
+                    updateStudentCardData(macAddress, result);
+                    connectedStudents.set(macAddress, result);
+                }
+            } catch (error) {
+                console.error(`Error fetching data for ${macAddress}:`, error);
+            }
+        }
+        
+        // Update student card with real data (SMOOTH transitions)
+        function updateStudentCardData(macAddress, data) {
+            const card = document.querySelector(`[data-mac="${macAddress}"]`);
+            if (!card) return;
+            
+            const style = getMentalStateStyle(data.mental_state);
+            const focus = Math.round(data.focus * 100);
+            
+            // Calculate percentages
+            const total = Object.values(data.bands).reduce((a, b) => a + b, 0);
+            const percentages = {};
+            for (let [key, val] of Object.entries(data.bands)) {
+                percentages[key] = Math.round((val / total) * 100);
+            }
+            
+            // Update state badge (smooth transition)
+            const stateBadge = card.querySelector('.state-badge');
+            if (stateBadge) {
+                stateBadge.style.transition = 'all 0.5s ease';
+                stateBadge.style.background = `${style.color}22`;
+                stateBadge.style.color = style.color;
+                stateBadge.innerHTML = `${style.icon} <span class="state-text">${style.label}</span>`;
+            }
+            
+            // Update focus meter (smooth animation)
+            const focusFill = card.querySelector('.focus-fill');
+            const focusValue = card.querySelector('.focus-value');
+            if (focusFill) {
+                focusFill.style.width = `${focus}%`;
+                focusFill.style.background = style.color;
+            }
+            if (focusValue) focusValue.textContent = `${focus}%`;
+            
+            // Update brain waves (smooth)
+            const alphaVal = card.querySelector('.alpha-val');
+            const betaVal = card.querySelector('.beta-val');
+            const thetaVal = card.querySelector('.theta-val');
+            const deltaVal = card.querySelector('.delta-val');
+            
+            if (alphaVal) alphaVal.textContent = `${percentages.alpha}%`;
+            if (betaVal) betaVal.textContent = `${percentages.beta}%`;
+            if (thetaVal) thetaVal.textContent = `${percentages.theta}%`;
+            if (deltaVal) deltaVal.textContent = `${percentages.delta}%`;
+            
+            // Update avatar color (smooth)
+            const avatar = card.querySelector('.student-avatar');
+            if (avatar) {
+                avatar.style.transition = 'all 0.5s ease';
+                avatar.style.background = `linear-gradient(135deg, ${style.color}, ${style.color}88)`;
+                avatar.textContent = style.icon;
+            }
+        }
+        
+        // Open individual student dashboard
+        function openStudentDashboard(macAddress) {
+            const studentData = connectedStudents.get(macAddress);
+            if (!studentData) return;
+            
+            // Store current MAC for analytics
+            window.currentStudentMac = macAddress;
+            
+            // Hide list, show individual dashboard
+            document.querySelector('.teacher-dashboard-card').style.display = 'none';
+            document.getElementById('individualDashboard').style.display = 'block';
+            
+            // Update individual dashboard with student data
+            updateIndividualDashboard(macAddress, studentData);
+            
+            // Fetch and display analytics
+            fetchStudentAnalytics(macAddress);
+            
+            // Start updating this student's dashboard
+            if (window.individualUpdateInterval) clearInterval(window.individualUpdateInterval);
+            window.individualUpdateInterval = setInterval(() => {
+                fetchAndUpdateIndividualDashboard(macAddress);
+                fetchStudentAnalytics(macAddress);  // Update analytics too
+            }, 2000);  // Update every 2 seconds
+        }
+        
+        // Fetch student analytics
+        async function fetchStudentAnalytics(macAddress) {
+            try {
+                const response = await fetch(`/analytics/${macAddress}?time_window=60`);
+                const result = await response.json();
+                
+                if (result.status === 'ok' && result.analytics) {
+                    updateAnalyticsDisplay(result.analytics);
+                }
+            } catch (error) {
+                console.error('Error fetching analytics:', error);
+            }
+        }
+        
+        // Update analytics display
+        function updateAnalyticsDisplay(analytics) {
+            // Update attention periods
+            if (analytics.attention_periods && analytics.attention_periods.length > 0) {
+                const periodsContainer = document.getElementById('studentFocusPeriods');
+                if (periodsContainer) {
+                    periodsContainer.innerHTML = '';
+                    
+                    analytics.attention_periods.forEach(period => {
+                        const qualityClass = period.quality_level === 'high' ? 'high-quality' : 
+                                           period.quality_level === 'medium' ? 'medium-quality' : 'low-quality';
+                        const badgeClass = period.quality_score >= 75 ? 'success' : 
+                                          period.quality_score >= 50 ? 'warning' : 'danger';
+                        const activeClass = period.is_active ? 'active' : '';
+                        
+                        const periodHtml = `
+                            <div class="period-item ${qualityClass} ${activeClass}">
+                                <div class="period-number">${period.period_number}.</div>
+                                <div class="period-time">${period.start_time}-${period.end_time}</div>
+                                <div class="period-duration">→ ${period.duration_minutes} mins</div>
+                                ${period.is_active ? '<div class="now-badge-solo">NOW</div>' : ''}
+                            </div>
+                        `;
+                        periodsContainer.innerHTML += periodHtml;
+                    });
+                }
+            }
+            
+            // Update session stats
+            if (analytics.session_stats) {
+                const avgSpan = document.getElementById('avgAttentionSpan');
+                const longestSpan = document.getElementById('longestSpan');
+                const totalFocus = document.getElementById('totalFocusTime');
+                
+                if (avgSpan) avgSpan.textContent = analytics.session_stats.avg_attention_span;
+                if (longestSpan) longestSpan.textContent = analytics.session_stats.longest_span;
+                if (totalFocus) totalFocus.textContent = analytics.session_stats.total_focus_time;
+            }
+            
+            // Update recommendation
+            if (analytics.recommendation) {
+                const recEl = document.getElementById('attentionRecommendation');
+                if (recEl) recEl.textContent = analytics.recommendation;
+            }
+            
+            // Update performance metrics
+            if (analytics.performance_metrics) {
+                const focusLevel = document.getElementById('studentFocusLevel');
+                const engagement = document.getElementById('studentEngagement');
+                const qualityScore = document.getElementById('studentQualityScore');
+                
+                if (focusLevel) focusLevel.textContent = `${analytics.performance_metrics.focus_level}%`;
+                if (engagement) engagement.textContent = `${analytics.performance_metrics.engagement}%`;
+                if (qualityScore) qualityScore.textContent = analytics.performance_metrics.quality_score;
+                
+                // Update circular progress indicators
+                updateCircularProgress('studentFocusLevel', analytics.performance_metrics.focus_level);
+                updateCircularProgress('studentEngagement', analytics.performance_metrics.engagement);
+                updateCircularProgress('studentQualityScore', analytics.performance_metrics.quality_score);
+            }
+            
+            // Update brain wave chart if timeline data available
+            if (analytics.wave_timeline) {
+                updateBrainWaveChart(analytics.wave_timeline);
+            }
+        }
+        
+        // Update circular progress (SVG animation)
+        function updateCircularProgress(elementId, percentage) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            const parent = element.closest('.metric-item');
+            if (!parent) return;
+            
+            const circle = parent.querySelector('.metric-progress');
+            if (!circle) return;
+            
+            const radius = 50;
+            const circumference = 2 * Math.PI * radius;
+            const offset = circumference - (percentage / 100) * circumference;
+            
+            circle.style.strokeDasharray = `${circumference} ${circumference}`;
+            circle.style.strokeDashoffset = offset;
+        }
+        
+        // Update brain wave chart
+        function updateBrainWaveChart(timeline) {
+            const canvas = document.getElementById('brainWaveChart');
+            if (!canvas || !timeline) return;
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            const width = canvas.width;
+            const height = canvas.height;
+            const padding = 40;
+            const graphWidth = width - 2 * padding;
+            const graphHeight = height - 2 * padding;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+            
+            // Draw background
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.02)';
+            ctx.fillRect(padding, padding, graphWidth, graphHeight);
+            
+            // Draw grid
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = padding + (graphHeight / 4) * i;
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(width - padding, y);
+                ctx.stroke();
+            }
+            
+            // Draw waves
+            const waves = [
+                { data: timeline.alpha, color: '#10b981', label: 'Alpha' },
+                { data: timeline.beta, color: '#3b82f6', label: 'Beta' },
+                { data: timeline.theta, color: '#8b5cf6', label: 'Theta' },
+                { data: timeline.delta, color: '#f59e0b', label: 'Delta' }
+            ];
+            
+            waves.forEach(wave => {
+                if (!wave.data || wave.data.length === 0) return;
+                
+                ctx.strokeStyle = wave.color;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                wave.data.forEach((value, index) => {
+                    const x = padding + (graphWidth / (wave.data.length - 1)) * index;
+                    const y = padding + graphHeight - (value * graphHeight);
+                    
+                    if (index === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
+                
+                ctx.stroke();
+            });
+        }
+        
+        // Update individual dashboard
+        function updateIndividualDashboard(macAddress, data) {
+            const style = getMentalStateStyle(data.mental_state);
+            const focus = Math.round(data.focus * 100);
+            
+            // Calculate percentages
+            const total = Object.values(data.bands).reduce((a, b) => a + b, 0);
+            const percentages = {};
+            for (let [key, val] of Object.entries(data.bands)) {
+                percentages[key] = Math.round((val / total) * 100);
+            }
+            
+            // Update state icon and text
+            const stateIcon = document.getElementById('stateIcon');
+            const stateText = document.getElementById('stateText');
+            if (stateIcon) stateIcon.textContent = style.icon;
+            if (stateText) stateText.textContent = style.label;
+            
+            // Update wave percentages with smooth transitions
+            const alphaValue = document.getElementById('alphaValue');
+            const betaValue = document.getElementById('betaValue');
+            const gammaValue = document.getElementById('gammaValue');
+            const thetaValue = document.getElementById('thetaValue');
+            
+            if (alphaValue) alphaValue.textContent = `${percentages.alpha}%`;
+            if (betaValue) betaValue.textContent = `${percentages.beta}%`;
+            if (gammaValue) gammaValue.textContent = `${percentages.gamma}%`;
+            if (thetaValue) thetaValue.textContent = `${percentages.theta}%`;
+            
+            // Update wave bars with smooth animation
+            const alphaBar = document.getElementById('alphaBar');
+            const betaBar = document.getElementById('betaBar');
+            const gammaBar = document.getElementById('gammaBar');
+            const thetaBar = document.getElementById('thetaBar');
+            
+            if (alphaBar) {
+                alphaBar.style.transition = 'width 0.5s ease';
+                alphaBar.style.width = `${percentages.alpha}%`;
+            }
+            if (betaBar) {
+                betaBar.style.transition = 'width 0.5s ease';
+                betaBar.style.width = `${percentages.beta}%`;
+            }
+            if (gammaBar) {
+                gammaBar.style.transition = 'width 0.5s ease';
+                gammaBar.style.width = `${percentages.gamma}%`;
+            }
+            if (thetaBar) {
+                thetaBar.style.transition = 'width 0.5s ease';
+                thetaBar.style.width = `${percentages.theta}%`;
+            }
+            
+            // Update focus level
+            const focusLevel = document.getElementById('studentFocusLevel');
+            if (focusLevel) focusLevel.textContent = `${focus}%`;
+        }
+        
+        // Fetch and update individual dashboard
+        async function fetchAndUpdateIndividualDashboard(macAddress) {
+            try {
+                const response = await fetch(`/latest?mac_address=${macAddress}`);
+                const result = await response.json();
+                
+                if (result.status === 'ok' && result.bands) {
+                    updateIndividualDashboard(macAddress, result);
+                }
+            } catch (error) {
+                console.error('Error updating individual dashboard:', error);
+            }
+        }
+        
+        // Close individual dashboard
+        function closeIndividualDashboard() {
+            document.querySelector('.teacher-dashboard-card').style.display = 'block';
+            document.getElementById('individualDashboard').style.display = 'none';
+            
+            if (window.individualUpdateInterval) {
+                clearInterval(window.individualUpdateInterval);
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTeacherInfo();
+            updateDateTime();
+            setInterval(updateDateTime, 1000);
+            
+            // Initial fetch
+            fetchConnectedStudents();
+            
+            // Update every 1 second (smooth updates without blinking)
+            updateInterval = setInterval(() => {
+                fetchConnectedStudents();
+            }, 1000);
+        });
+        
+        // Modal functions (kept for compatibility)
+        function openAddStudentModal() {
+            document.getElementById('addStudentModal').style.display = 'flex';
+        }
+        
+        function closeAddStudentModal() {
+            document.getElementById('addStudentModal').style.display = 'none';
+        }
+        
+        async function addNewStudent(event) {
+            event.preventDefault();
+            // This would be implemented to manually add students
+            closeAddStudentModal();
+        }
+        
+        // End Session Function - Redirect to Session History
+        async function endSession() {
+            if (!confirm('Are you sure you want to end this monitoring session?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/sessions/end-monitoring', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'ok') {
+                    alert('Session ended successfully!');
+                    // Redirect to session history page
+                    window.location.href = '/session-history';
+                } else {
+                    alert('Error ending session: ' + result.msg);
+                }
+            } catch (error) {
+                console.error('Error ending session:', error);
+                alert('Failed to end session');
+            }
+        }
+    </script>
+</body>
+</html>

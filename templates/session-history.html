@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session History - Bracon EEG Monitoring</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        .session-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .session-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .session-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .session-id {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .session-status {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .session-status.active {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .session-status.ended {
+            background: rgba(107, 114, 128, 0.3);
+            color: #9ca3af;
+        }
+
+        .session-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .session-info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.3rem;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .session-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+
+        .session-card.expanded .session-details {
+            max-height: 2000px;
+        }
+
+        .students-in-session {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .student-item {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .student-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .student-state-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .focus-metric {
+            text-align: right;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .no-sessions {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+        }
+
+        .no-sessions-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .expand-icon {
+            transition: transform 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .session-card.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+
+        .session-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-box {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-box-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-box-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="background-wrapper">
+        <div class="neural-network"></div>
+        <div class="particles"></div>
+        <div class="gradient-orbs"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <div class="logo-pulse"></div>
+                <span class="logo-text">BRACON</span>
+                <span class="logo-subtitle">EEG Monitoring</span>
+            </div>
+            <div class="nav-links">
+                <a href="/dashboard" class="nav-link">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </a>
+                <a href="/students-page" class="nav-link">
+                    <span class="nav-icon">👥</span>
+                    Students
+                </a>
+                <a href="/session-history" class="nav-link active">
+                    <span class="nav-icon">📜</span>
+                    History
+                </a>
+                <a href="#" class="nav-link">
+                    <span class="nav-icon">⚙️</span>
+                    Settings
+                </a>
+            </div>
+            <div class="nav-actions">
+                <button class="notification-btn">
+                    <span class="notification-badge">3</span>
+                    🔔
+                </button>
+                <div class="user-avatar">
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='20' cy='20' r='20' fill='%23667eea'/%3E%3Ctext x='20' y='26' font-size='16' fill='white' text-anchor='middle' font-family='Arial'%3ET%3C/text%3E%3C/svg%3E" alt="User">
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header Section -->
+        <section class="header-section">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1 class="page-title">
+                        <span class="title-gradient">Session</span> History
+                    </h1>
+                    <p class="page-subtitle">View all monitoring sessions and student performance</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sessions List -->
+        <section class="sessions-section">
+            <div class="glass-card">
+                <div class="card-title">
+                    <h3>📋 All Sessions (<span id="sessionCount">0</span>)</h3>
+                </div>
+                <div id="sessionsContainer">
+                    <!-- Sessions will be dynamically inserted here -->
+                    <div class="no-sessions">
+                        <div class="no-sessions-icon">⏳</div>
+                        <p>Loading sessions...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        let sessionsData = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSessionHistory();
+        });
+
+        async function loadSessionHistory() {
+            try {
+                const response = await fetch('/api/session-history');
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    sessionsData = data.sessions;
+                    renderSessions();
+                } else {
+                    showError('Failed to load session history');
+                }
+            } catch (error) {
+                console.error('Error loading session history:', error);
+                showError('Error connecting to database');
+            }
+        }
+
+        function renderSessions() {
+            const container = document.getElementById('sessionsContainer');
+            const sessionCount = document.getElementById('sessionCount');
+            
+            if (!sessionsData || sessionsData.length === 0) {
+                container.innerHTML = `
+                    <div class="no-sessions">
+                        <div class="no-sessions-icon">📭</div>
+                        <p>No sessions found. Start monitoring to create your first session!</p>
+                    </div>
+                `;
+                sessionCount.textContent = '0';
+                return;
+            }
+
+            sessionCount.textContent = sessionsData.length;
+            container.innerHTML = '';
+
+            sessionsData.forEach(session => {
+                const sessionCard = createSessionCard(session);
+                container.appendChild(sessionCard);
+            });
+        }
+
+        function createSessionCard(session) {
+            const card = document.createElement('div');
+            card.className = 'session-card';
+            card.onclick = () => toggleSessionDetails(card, session.id);
+
+            const isActive = session.status === 'active';
+            const statusClass = isActive ? 'active' : 'ended';
+            const statusText = isActive ? '🟢 Active' : '⚫ Ended';
+
+            const startDate = new Date(session.start_time);
+            const endDate = session.end_time ? new Date(session.end_time) : null;
+            const duration = endDate ? 
+                Math.round((endDate - startDate) / 1000 / 60) : 
+                Math.round((new Date() - startDate) / 1000 / 60);
+
+            card.innerHTML = `
+                <div class="session-header">
+                    <div>
+                        <div class="session-id">Session #${session.id}</div>
+                        ${session.teacher_name ? `<div style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.3rem;">👨‍🏫 ${session.teacher_name} - ${session.subject || 'N/A'}</div>` : ''}
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span class="session-status ${statusClass}">${statusText}</span>
+                        <span class="expand-icon">▼</span>
+                    </div>
+                </div>
+                <div class="session-info">
+                    <div class="session-info-item">
+                        <span class="info-label">Start Time</span>
+                        <span class="info-value">${startDate.toLocaleString()}</span>
+                    </div>
+                    <div class="session-info-item">
+                        <span class="info-label">Duration</span>
+                        <span class="info-value">${duration} minutes</span>
+                    </div>
+                    <div class="session-info-item">
+                        <span class="info-label">Students</span>
+                        <span class="info-value">${session.student_count} students</span>
+                    </div>
+                    <div class="session-info-item">
+                        <span class="info-label">Avg Attention Span</span>
+                        <span class="info-value" style="color: #10b981;">${session.avg_attention_span || 0} min</span>
+                    </div>
+                </div>
+                <div class="session-details" id="details-${session.id}">
+                    <!-- Details loaded when expanded -->
+                </div>
+            `;
+
+            return card;
+        }
+
+        async function toggleSessionDetails(card, sessionId) {
+            console.log('🔄 Toggling session', sessionId, 'Current state:', card.classList.contains('expanded'));
+            card.classList.toggle('expanded');
+            
+            console.log('📍 After toggle:', card.classList.contains('expanded'));
+            
+            if (card.classList.contains('expanded')) {
+                const detailsDiv = document.getElementById(`details-${sessionId}`);
+                
+                if (!detailsDiv) {
+                    console.error('❌ Details div not found for session', sessionId);
+                    return;
+                }
+                
+                if (detailsDiv.innerHTML.trim() === '') {
+                    detailsDiv.innerHTML = '<p style="text-align: center; padding: 1rem;">Loading session details...</p>';
+                    
+                    try {
+                        console.log('📡 Fetching details for session', sessionId);
+                        const response = await fetch(`/api/session-details/${sessionId}`);
+                        const data = await response.json();
+                        
+                        if (data.status === 'success') {
+                            renderSessionDetails(detailsDiv, data);
+                        } else {
+                            detailsDiv.innerHTML = '<p style="text-align: center; color: #ef4444;">Failed to load details</p>';
+                        }
+                    } catch (error) {
+                        console.error('Error loading session details:', error);
+                        detailsDiv.innerHTML = '<p style="text-align: center; color: #ef4444;">Error loading details</p>';
+                    }
+                }
+            }
+        }
+
+        function renderSessionDetails(container, data) {
+            const session = data.session;
+            const students = data.students;
+
+            let statsHTML = `
+                <div class="session-stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-box-label">Total Focus Time</div>
+                        <div class="stat-box-value">${session.total_focus_minutes || 0}m</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-label">Avg Attention Span</div>
+                        <div class="stat-box-value">${session.avg_attention_span || 0} min</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-label">Peak Focus</div>
+                        <div class="stat-box-value">${session.peak_focus || 0}%</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-box-label">Data Points</div>
+                        <div class="stat-box-value">${session.data_points || 0}</div>
+                    </div>
+                </div>
+            `;
+
+            let studentsHTML = '<div class="students-in-session"><h4 style="margin-bottom: 1rem;">👥 Students in Session:</h4>';
+            
+            if (students && students.length > 0) {
+                students.forEach(student => {
+                    const stateColors = {
+                        focused: '#10b981',
+                        distracted: '#ef4444',
+                        drowsy: '#f97316',
+                        relaxed: '#a855f7'
+                    };
+                    const stateIcons = {
+                        focused: '🎯',
+                        distracted: '😵',
+                        drowsy: '😴',
+                        relaxed: '😌'
+                    };
+
+                    studentsHTML += `
+                        <div class="student-item">
+                            <div class="student-name">
+                                ${student.name} <span style="color: var(--text-muted); font-size: 0.9rem;">(${student.mac_address})</span>
+                            </div>
+                            <div class="student-state-badge" style="background: ${stateColors[student.dominant_state]}30; color: ${stateColors[student.dominant_state]}; border: 1px solid ${stateColors[student.dominant_state]};">
+                                ${stateIcons[student.dominant_state]} ${student.dominant_state.toUpperCase()}
+                            </div>
+                            <div class="focus-metric" style="color: #10b981;">
+                                ${student.avg_focus}% Focus
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                studentsHTML += '<p style="text-align: center; color: var(--text-muted);">No student data available for this session.</p>';
+            }
+            
+            studentsHTML += '</div>';
+
+            container.innerHTML = statsHTML + studentsHTML;
+        }
+
+        function showError(message) {
+            const container = document.getElementById('sessionsContainer');
+            container.innerHTML = `
+                <div class="no-sessions">
+                    <div class="no-sessions-icon">❌</div>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

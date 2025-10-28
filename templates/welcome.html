@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Bracon - Quick Start Guide</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        .welcome-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+        .welcome-hero {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        .welcome-logo {
+            font-size: 6rem;
+            margin-bottom: 2rem;
+        }
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .guide-card {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+        .guide-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+        .guide-number {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #667eea, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+            margin-bottom: 1rem;
+        }
+        .cta-section {
+            text-align: center;
+            margin-top: 4rem;
+        }
+        .cta-buttons {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .cta-btn {
+            padding: 1.5rem 3rem;
+            font-size: 1.2rem;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .cta-btn.primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        .cta-btn.secondary {
+            background: rgba(102, 126, 234, 0.2);
+            color: white;
+            border: 2px solid #667eea;
+        }
+        .cta-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="background-wrapper">
+        <div class="neural-network"></div>
+        <div class="particles"></div>
+        <div class="gradient-orbs"></div>
+    </div>
+
+    <div class="welcome-container">
+        <div class="welcome-hero">
+            <div class="welcome-logo">🧠</div>
+            <h1 class="page-title">
+                Welcome to <span class="title-gradient">BRACON</span>
+            </h1>
+            <p class="page-subtitle" style="font-size: 1.5rem; margin-top: 1rem;">
+                EEG Attention Monitoring System
+            </p>
+            <p style="color: var(--text-secondary); font-size: 1.1rem; margin-top: 1rem;">
+                The most advanced classroom attention tracking platform
+            </p>
+        </div>
+
+        <div class="guide-grid">
+            <div class="guide-card">
+                <div class="guide-number">1</div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Dashboard</h3>
+                <p style="color: var(--text-secondary); line-height: 1.6;">
+                    Monitor real-time student attention levels with beautiful visualizations, 
+                    brain wave charts, and performance metrics.
+                </p>
+            </div>
+
+            <div class="guide-card">
+                <div class="guide-number">2</div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Students</h3>
+                <p style="color: var(--text-secondary); line-height: 1.6;">
+                    Manage all your students in one place. Add new students, start sessions, 
+                    and view individual performance history.
+                </p>
+            </div>
+
+            <div class="guide-card">
+                <div class="guide-number">3</div>
+                <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Session History</h3>
+                <p style="color: var(--text-secondary); line-height: 1.6;">
+                    Access complete timeline of all monitoring sessions with detailed events, 
+                    statistics, and export capabilities.
+                </p>
+            </div>
+        </div>
+
+        <div class="glass-card" style="padding: 3rem; text-align: center; margin-bottom: 3rem;">
+            <h2 style="font-size: 2rem; margin-bottom: 2rem;">✨ Key Features</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; text-align: left;">
+                <div>
+                    <h4 style="color: #10b981; margin-bottom: 0.5rem;">🎨 Beautiful UI</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Dark theme with stunning animations</p>
+                </div>
+                <div>
+                    <h4 style="color: #3b82f6; margin-bottom: 0.5rem;">📊 Real-time Charts</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Live brain wave visualization</p>
+                </div>
+                <div>
+                    <h4 style="color: #8b5cf6; margin-bottom: 0.5rem;">📥 Export Data</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Download session reports</p>
+                </div>
+                <div>
+                    <h4 style="color: #f59e0b; margin-bottom: 0.5rem;">🎯 Smart Tracking</h4>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Attention span analytics</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="cta-section">
+            <h2 style="font-size: 2.5rem; margin-bottom: 2rem;">Ready to Get Started?</h2>
+            
+            <!-- Teacher Setup Form -->
+            <div class="glass-card" style="max-width: 600px; margin: 0 auto 3rem; padding: 3rem;">
+                <h3 style="font-size: 1.8rem; margin-bottom: 2rem; text-align: center;">
+                    👨‍🏫 Teacher Setup
+                </h3>
+                <form id="teacherSetupForm" onsubmit="startSession(event)">
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label for="teacherNameInput" style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-weight: 600;">
+                            Teacher Name
+                        </label>
+                        <input 
+                            type="text" 
+                            id="teacherNameInput" 
+                            class="form-input"
+                            placeholder="Enter your name"
+                            required
+                            style="width: 100%; padding: 1rem; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); border-radius: 12px; color: var(--text-primary); font-size: 1rem; font-family: var(--font-primary);"
+                        >
+                    </div>
+                    <div class="form-group" style="margin-bottom: 2rem;">
+                        <label for="subjectInput" style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-weight: 600;">
+                            Subject
+                        </label>
+                        <input 
+                            type="text" 
+                            id="subjectInput" 
+                            class="form-input"
+                            placeholder="Enter subject (e.g., Mathematics, Science)"
+                            required
+                            style="width: 100%; padding: 1rem; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border); border-radius: 12px; color: var(--text-primary); font-size: 1rem; font-family: var(--font-primary);"
+                        >
+                    </div>
+                    <button type="submit" class="cta-btn primary" style="width: 100%; margin: 0;">
+                        🚀 Start Monitoring Session
+                    </button>
+                </form>
+            </div>
+
+            <div class="cta-buttons">
+                <a href="students.html" class="cta-btn secondary">
+                    👥 View Students
+                </a>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 4rem; padding: 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
+            <p style="color: var(--text-muted); font-size: 0.9rem;">
+                💡 Tip: Use the floating action button (+) for quick access to common functions
+            </p>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">
+                🔔 Click the notification bell to see system alerts
+            </p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        async function startSession(event) {
+            event.preventDefault();
+            
+            const teacherName = document.getElementById('teacherNameInput').value;
+            const subject = document.getElementById('subjectInput').value;
+            
+            // Show loading animation
+            const button = event.target.querySelector('button');
+            button.innerHTML = '⏳ Starting Session...';
+            button.disabled = true;
+            
+            try {
+                // Start monitoring session on server
+                const response = await fetch('/sessions/start-monitoring', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        teacher_name: teacherName,
+                        subject: subject
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.status === 'ok') {
+                    // Store in localStorage for UI reference
+                    localStorage.setItem('teacherName', teacherName);
+                    localStorage.setItem('subjectName', subject);
+                    localStorage.setItem('sessionStartTime', new Date().toISOString());
+                    localStorage.setItem('activeSessionId', result.session_id);
+                    
+                    button.innerHTML = '✅ Session Started!';
+                    
+                    // Redirect to dashboard
+                    setTimeout(() => {
+                        window.location.href = '/dashboard';
+                    }, 800);
+                } else {
+                    button.innerHTML = '❌ Error: ' + result.msg;
+                    button.disabled = false;
+                }
+            } catch (error) {
+                console.error('Error starting session:', error);
+                button.innerHTML = '❌ Connection Error';
+                button.disabled = false;
+            }
+        }
+
+        // Add input focus effects
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputs = document.querySelectorAll('.form-input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.style.borderColor = 'var(--primary-color)';
+                    this.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.1)';
+                });
+                input.addEventListener('blur', function() {
+                    this.style.borderColor = 'var(--card-border)';
+                    this.style.boxShadow = 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
