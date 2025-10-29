@@ -3,31 +3,15 @@ Students Routes Module
 Handles all student-related endpoints
 """
 from flask import jsonify, render_template
-import mysql.connector
+import mysql.connector  # Only for error handling
 import logging
 from datetime import datetime, timedelta
 import numpy as np
-import os
-from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
+# Import centralized database connection
+from db import get_db_connection
 
 logger = logging.getLogger(__name__)
-
-def get_db_connection():
-    """Get database connection using environment variables"""
-    try:
-        return mysql.connector.connect(
-            host=os.getenv('MYSQL_HOST', 'localhost'),
-            port=int(os.getenv('MYSQL_PORT', 3306)),
-            user=os.getenv('MYSQL_USER', 'root'),
-            password=os.getenv('MYSQL_PASSWORD', 'root'),
-            database=os.getenv('MYSQL_DATABASE', 'eeg_db1')
-        )
-    except mysql.connector.Error as err:
-        logger.error(f"Database connection error: {err}")
-        return None
 
 def get_formula_based_state(percentages):
     """

@@ -3,7 +3,7 @@ Real-Time Model Performance Monitor
 Tracks model predictions in production and validates accuracy
 """
 
-import mysql.connector
+import mysql.connector  # Only for error handling
 from datetime import datetime, timedelta
 import numpy as np
 from collections import Counter
@@ -12,7 +12,9 @@ import os
 
 sys.path.append(os.path.dirname(__file__))
 
-from app import get_db_connection, get_mental_state, calculate_focus
+# Import centralized database connection
+from db import get_db_connection
+from app import get_mental_state, calculate_focus
 
 def analyze_recent_predictions(minutes=60):
     """Analyze predictions from last N minutes"""

@@ -1,13 +1,17 @@
 from flask import Flask, request, jsonify, render_template
 import numpy as np
 from scipy.signal import butter, lfilter, iirnotch
-import mysql.connector
+import mysql.connector  # Only for error handling
 from datetime import datetime
 import traceback
 import logging
 import joblib
 import os
 from dotenv import load_dotenv  # Added for environment variables
+
+# Import centralized database connection
+from db import get_db_connection
+
 from analytics import (
     calculate_attention_periods,
     calculate_session_stats,
@@ -100,35 +104,6 @@ EEG_BANDS = {
 # ----- EEG Buffer (per device MAC) -----
 EEG_BUFFERS = {}  # Dictionary to store separate buffers for each MAC address
 DEVICE_STATUSES = {}  # Dictionary to store status for each device MAC address
-
-# ----- MySQL Setup -----
-def get_db_connection():
-    """
-    Connect to Clever Cloud MySQL Database
-    Uses environment variables from .env file for security
-    """
-    try:
-        # Get database credentials from environment variables
-        db_config = {
-            'host': os.getenv('MYSQL_HOST', 'localhost'),
-            'port': int(os.getenv('MYSQL_PORT', 3306)),
-            'user': os.getenv('MYSQL_USER', 'root'),
-            'password': os.getenv('MYSQL_PASSWORD', 'root'),
-            'database': os.getenv('MYSQL_DATABASE', 'eeg_db1'),
-            'autocommit': True,
-            'connection_timeout': 30,  # 30 seconds timeout for Clever Cloud
-            'pool_name': 'eeg_pool',  # Short pool name to avoid length issues
-            'pool_size': 5,  # Connection pooling for better performance
-            'pool_reset_session': True
-        }
-        
-        db = mysql.connector.connect(**db_config)
-        logger.info(f"✅ Connected to MySQL: {db_config['host']}")
-        return db
-    except mysql.connector.Error as err:
-        logger.error(f"❌ Database connection error: {err}")
-        logger.error(f"Host: {os.getenv('MYSQL_HOST', 'Not set')}")
-        return None
 
 # Initialize database
 def init_database():
